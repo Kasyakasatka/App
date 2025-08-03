@@ -1,5 +1,3 @@
-using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using UserManagementApp.Data;
@@ -9,6 +7,8 @@ using UserManagementApp.Models;
 using UserManagementApp.Services;
 using UserManagementApp.Validators;
 using Serilog;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,20 +26,15 @@ builder.Services.AddFluentValidators();
 builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
-app.UseSerilogRequestLogging();
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
 app.UseMiddleware<ExceptionHandlerMiddleware>();
-app.UseMiddleware<UserStatusCheckMiddleware>();
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseMiddleware<UserStatusCheckMiddleware>();
+
 app.UseRouting();
+
+app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 app.UseAuthorization();
