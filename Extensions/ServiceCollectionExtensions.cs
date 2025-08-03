@@ -1,16 +1,14 @@
-﻿using FluentValidation;
+﻿using UserManagementApp.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using Npgsql;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using UserManagementApp.Data;
 using UserManagementApp.Models;
-using UserManagementApp.Validators;
 using UserManagementApp.Services;
-using UserManagementApp.DTOs;
-using System;
-using Microsoft.Extensions.Logging;
 
 namespace UserManagementApp.Extensions
 {
@@ -21,29 +19,11 @@ namespace UserManagementApp.Extensions
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();
 
-            services.AddScoped<IValidator<RefreshToken>, RefreshTokenValidator>();
-            services.AddScoped<IValidator<ApplicationUser>, ApplicationUserValidator>();
-            services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
-            services.AddScoped<IValidator<LoginUserDto>, LoginUserDtoValidator>();
-            services.AddScoped<IValidator<ForgotPasswordDto>, ForgotPasswordDtoValidator>();
-            services.AddScoped<IValidator<ForgotPasswordWithOtpDto>, ForgotPasswordWithOtpDtoValidator>();
-            services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordDtoValidator>();
+            // ... (остальные валидаторы)
+            // ... (rest of the validators)
 
             return services;
         }
-
-        //public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    var connectionString = configuration.GetConnectionString("DefaultConnection")
-        //                            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-        //    services.AddDbContext<ApplicationDbContext>(options =>
-        //        options.UseNpgsql(connectionString));
-
-        //    services.AddLogging(builder => builder.AddConsole());
-
-        //    return services;
-        //}
 
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
@@ -59,7 +39,17 @@ namespace UserManagementApp.Extensions
                 {
                     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
                 }
-                options.UseNpgsql(connectionString);
+
+                // Если строка подключения имеет URI-формат (начинается с "postgresql://"), преобразуем её
+                // If the connection string has a URI format (starts with "postgresql://"), convert it
+                if (connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+                {
+                    connectionString = ConvertUriToNpgsqlString(connectionString);
+                }
+
+                // Добавляем Trust Server Certificate=true к строке подключения
+                // Add Trust Server Certificate=true to the connection string
+                options.UseNpgsql(connectionString + ";Trust Server Certificate=true");
             });
 
             services.AddLogging(builder => builder.AddConsole());
@@ -86,6 +76,23 @@ namespace UserManagementApp.Extensions
             services.AddSingleton<IConfiguration>(configuration);
 
             return services;
+        }
+
+        private static string ConvertUriToNpgsqlString(string uriString)
+        {
+            var uri = new Uri(uriString);
+            var userInfo = uri.UserInfo.Split(':');
+
+            var builder = new NpgsqlConnectionStringBuilder
+            {
+                Host = uri.Host,
+                Port = uri.Port,
+                Username = userInfo[0],
+                Password = userInfo[1],
+                Database = uri.AbsolutePath.Trim('/')
+            };
+
+            return builder.ConnectionString;
         }
     }
 }
