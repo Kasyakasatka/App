@@ -5,9 +5,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using Npgsql;
+using UserManagementApp.Models;
+using UserManagementApp.DTOs;
+using UserManagementApp.Validators;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
-using UserManagementApp.Models;
 using UserManagementApp.Services;
 
 namespace UserManagementApp.Extensions
@@ -19,8 +22,13 @@ namespace UserManagementApp.Extensions
             services.AddFluentValidationAutoValidation();
             services.AddFluentValidationClientsideAdapters();
 
-            // ... (остальные валидаторы)
-            // ... (rest of the validators)
+            services.AddScoped<IValidator<RefreshToken>, RefreshTokenValidator>();
+            services.AddScoped<IValidator<ApplicationUser>, ApplicationUserValidator>();
+            services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+            services.AddScoped<IValidator<LoginUserDto>, LoginUserDtoValidator>();
+            services.AddScoped<IValidator<ForgotPasswordDto>, ForgotPasswordDtoValidator>();
+            services.AddScoped<IValidator<ForgotPasswordWithOtpDto>, ForgotPasswordWithOtpDtoValidator>();
+            services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordDtoValidator>();
 
             return services;
         }
@@ -49,7 +57,9 @@ namespace UserManagementApp.Extensions
 
                 // Добавляем Trust Server Certificate=true к строке подключения
                 // Add Trust Server Certificate=true to the connection string
-                options.UseNpgsql(connectionString + ";Trust Server Certificate=true");
+                var finalConnectionString = connectionString + ";Trust Server Certificate=true";
+
+                options.UseNpgsql(finalConnectionString);
             });
 
             services.AddLogging(builder => builder.AddConsole());
