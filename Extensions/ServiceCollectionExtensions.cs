@@ -32,13 +32,35 @@ namespace UserManagementApp.Extensions
             return services;
         }
 
+        //public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    var connectionString = configuration.GetConnectionString("DefaultConnection")
+        //                            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+        //    services.AddDbContext<ApplicationDbContext>(options =>
+        //        options.UseNpgsql(connectionString));
+
+        //    services.AddLogging(builder => builder.AddConsole());
+
+        //    return services;
+        //}
+
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection")
-                                    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            // Логгируем полученную строку подключения, чтобы проверить, что она не пустая и правильная.
+            // Log the retrieved connection string to verify it's not empty and is correct.
+            Console.WriteLine($"Connection string from configuration: {connectionString}");
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connectionString));
+            {
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                }
+                options.UseNpgsql(connectionString);
+            });
 
             services.AddLogging(builder => builder.AddConsole());
 
