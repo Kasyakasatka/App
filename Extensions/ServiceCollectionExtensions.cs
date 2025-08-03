@@ -98,7 +98,7 @@ namespace UserManagementApp.Extensions
                 Host = uri.Host,
                 Port = uri.Port,
                 Username = userInfo[0],
-                Password = userInfo[1],
+                Password = Uri.UnescapeDataString(userInfo[1]), // Экранируем пароль
                 Database = uri.AbsolutePath.Trim('/')
             };
 
