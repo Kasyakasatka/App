@@ -25,5 +25,4 @@ COPY --from=build /app/out .
 EXPOSE 8080
 
 # Выполняем миграции перед запуском приложения
-ENTRYPOINT ["/bin/sh", "-c", "dotnet exec $(dotnet tool path dotnet-ef)/dotnet-ef.dll database update --project UserManagementApp.csproj && dotnet UserManagementApp.dll"]
-
+ENTRYPOINT ["/bin/sh", "-c", "/root/.dotnet/tools/dotnet-ef database update --project UserManagementApp.csproj && dotnet UserManagementApp.dll"]
