@@ -26,3 +26,4 @@ EXPOSE 8080
 
 # Выполняем миграции перед запуском приложения
 ENTRYPOINT ["/bin/sh", "-c", "dotnet exec $(dotnet tool path dotnet-ef)/dotnet-ef.dll database update --project UserManagementApp.csproj && dotnet UserManagementApp.dll"]
+
