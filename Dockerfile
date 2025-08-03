@@ -3,7 +3,7 @@ WORKDIR /app
 
 COPY *.csproj ./
 RUN dotnet restore
-
+RUN dotnet tool install --global dotnet-ef --version 8.0.0
 COPY . .
 RUN dotnet ef database update --project UserManagementApp.csproj
 RUN dotnet publish -c Release -o out
