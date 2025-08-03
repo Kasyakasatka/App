@@ -1,0 +1,51 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using UserManagementApp.Data;
+using UserManagementApp.Extensions;
+using UserManagementApp.Middleware;
+using UserManagementApp.Models;
+using UserManagementApp.Services;
+using UserManagementApp.Validators;
+using Serilog;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, lc) => lc
+    .ReadFrom.Configuration(ctx.Configuration)
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day));
+
+builder.Services.AddDatabase(builder.Configuration);
+builder.Services.AddIdentity();
+builder.Services.AddApplicationServices(builder.Configuration);
+
+builder.Services.AddFluentValidators();
+
+builder.Services.AddControllersWithViews();
+var app = builder.Build();
+
+app.UseSerilogRequestLogging();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+app.UseMiddleware<ExceptionHandlerMiddleware>();
+app.UseMiddleware<UserStatusCheckMiddleware>();
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

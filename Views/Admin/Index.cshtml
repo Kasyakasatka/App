@@ -1,0 +1,132 @@
+﻿@model UserManagementApp.DTOs.UserManagementDto
+@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="container-fluid py-4">
+    @if (TempData["StatusMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["StatusMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex gap-2">
+            <form id="userActionForm" method="post">
+                <button type="button" class="btn btn-primary btn-icon" disabled id="blockBtn" data-action="Block">
+                    <i class="fa-solid fa-lock"></i> Block
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-icon" disabled id="unblockBtn" data-action="Unblock">
+                    <i class="fa-solid fa-unlock"></i> Unblock
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-icon" disabled id="deleteBtn" data-action="Delete">
+                    <i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+                <input type="hidden" name="selectedUsers" id="selectedUsersInput" />
+            </form>
+        </div>
+        <div class="input-group" style="width: 250px;">
+            <input type="text" class="form-control" placeholder="Filter" aria-label="Filter" id="filterInput">
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-striped" id="userTable">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">
+                        <input type="checkbox" id="selectAllCheckbox">
+                    </th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Last Seen</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="selectedUsers" value="@user.Id" class="user-checkbox">
+                        </td>
+                        <td>
+                            <div>@user.Name</div>
+                            <small class="text-muted">N/A</small>
+                        </td>
+                        <td>@user.Email</td>
+                        <td>
+                            <div>@((DateTime.UtcNow - user.LastLoginTime).TotalMinutes < 60 ? "Less than an hour ago" : user.LastLoginTime.ToString("yyyy-MM-dd HH:mm"))</div>
+                        </td>
+                        <td>
+                            @if (user.IsBlocked)
+                            {
+                                <span class="badge bg-danger">Blocked</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const selectAllCheckbox = $('#selectAllCheckbox');
+            const userCheckboxes = $('.user-checkbox');
+            const actionButtons = $('#blockBtn, #unblockBtn, #deleteBtn');
+            let pendingAction = null;
+
+            function toggleButtons() {
+                const anyChecked = userCheckboxes.is(':checked');
+                actionButtons.prop('disabled', !anyChecked);
+            }
+
+            selectAllCheckbox.on('change', function () {
+                userCheckboxes.prop('checked', this.checked);
+                toggleButtons();
+            });
+
+            userCheckboxes.on('change', function () {
+                if (!this.checked) {
+                    selectAllCheckbox.prop('checked', false);
+                } else if (userCheckboxes.length === userCheckboxes.filter(':checked').length) {
+                    selectAllCheckbox.prop('checked', true);
+                }
+                toggleButtons();
+            });
+
+            actionButtons.on('click', function(e) {
+                e.preventDefault();
+                pendingAction = $(this).data('action');
+                const form = $('#userActionForm');
+                const selectedUsers = userCheckboxes.filter(':checked').map((i, el) => $(el).val()).get();
+
+                form.find('input[name="selectedUsers"]').remove();
+                selectedUsers.forEach(id => {
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'selectedUsers',
+                        value: id
+                    }).appendTo(form);
+                });
+
+                form.attr('action', `/Admin/${pendingAction}`);
+                form.submit();
+            });
+
+            toggleButtons();
+        });
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

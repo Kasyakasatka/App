@@ -1,0 +1,24 @@
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.link-custom:hover {
+    color: green; 
+    text-decoration: underline;
+}
+.link-custom {
+    color: magenta;
+    text-decoration: none;
+}

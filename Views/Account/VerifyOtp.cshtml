@@ -1,0 +1,116 @@
+﻿@model UserManagementApp.DTOs.ForgotPasswordWithOtpDto
+@{
+    ViewData["Title"] = "Verify OTP";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - The App</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body {
+            background-color: darkslategrey;
+        }
+
+        .login-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+
+        .right-panel {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .btn-primary-custom {
+            background-color: seagreen;
+            border-color: seagreen;
+            font-weight: 600;
+            padding: 12px;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .form-control:focus {
+            border-color: magenta;
+            box-shadow: 0 0 0 0.25rem rgba(255, 0, 255, 0.25);
+            outline: none;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: darkgreen;
+            border-color: darkgreen;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .login-form {
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .link-custom {
+            color: darkmagenta;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="left-panel">
+            <div class="login-form">
+                <div class="mb-5">
+                    <h1 class="logo" style="color: darkmagenta; font-weight: 700;">THE APP</h1>
+                </div>
+                <h2 class="mb-4">Verify OTP</h2>
+                @if (ViewBag.Email != null)
+                {
+                    <p class="text-muted">An OTP code has been sent to your email: <b>@ViewBag.Email</b></p>
+                }
+                else
+                {
+                    <p class="text-muted">Please check your email and enter the code below.</p>
+                }
+
+                <form asp-action="VerifyOtp" method="post" id="resetPasswordForm">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="hidden" asp-for="Email" value="@ViewBag.Email" />
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Otp" class="form-label text-muted">OTP</label>
+                        <input asp-for="Otp" class="form-control form-control-custom" placeholder="Enter the 6-digit OTP" />
+                        <span asp-validation-for="Otp" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="NewPassword" class="form-label text-muted">New Password</label>
+                        <input asp-for="NewPassword" class="form-control form-control-custom" type="password" />
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary-custom">Reset Password</button>
+                    </div>
+                </form>
+                <div class="mt-4 text-center">
+                    <small><a asp-action="Login" class="link-custom">Back to Sign In</a></small>
+                </div>
+            </div>
+        </div>
+        <div class="right-panel d-none d-md-block"></div>
+    </div>
+</body>
+</html>
