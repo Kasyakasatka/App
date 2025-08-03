@@ -6,8 +6,6 @@ RUN dotnet restore
 
 COPY . .
 
-RUN dotnet ef database update --project UserManagementApp.csproj
-
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
@@ -17,4 +15,4 @@ COPY --from=build /app/out .
 
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "UserManagementApp.dll"]
+ENTRYPOINT ["/bin/sh", "-c", "dotnet ef database update --project UserManagementApp.csproj && dotnet UserManagementApp.dll"]
