@@ -13,64 +13,71 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
-        body {
-            background-color: darkslategrey;
+                body {
+                        background-color: darkslategrey;
+
         }
 
-        .login-container {
-            display: flex;
-            height: 100vh;
+                .login-container {
+                        display: flex;
+                        height: 100vh;
+
         }
 
-        .left-panel {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #fff;
+                .left-panel {
+                        flex: 1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background-color: #fff;
+
         }
 
-        .right-panel {
-            flex: 1;
-            background-size: cover;
-            background-position: center;
+                .right-panel {
+                        flex: 1;
+                        background-size: cover;
+                        background-position: center;
+
         }
 
-        .login-form {
-            width: 80%;
-            max-width: 400px;
+                .login-form {
+                        width: 80%;
+                        max-width: 400px;
+
         }
 
-        .form-control-custom {
-            border: 1px solid #dee2e6;
-            box-shadow: none;
-            height: 48px;
-            font-size: 1rem;
+                .form-control-custom {
+                        border: 1px solid #dee2e6;
+                        box-shadow: none;
+                        height: 48px;
+                        font-size: 1rem;
+
         }
 
-        .form-control:focus {
-            border-color: magenta;
-            box-shadow: 0 0 0 0.25rem rgba(255, 0, 255, 0.25);
-            outline: none;
+                .form-control:focus {
+                        border-color: magenta;
+                        box-shadow: 0 0 0 0.25rem rgba(255, 0, 255, 0.25);
+                        outline: none;
+
         }
 
-        .btn-primary-custom {
-            background-color: seagreen;
-            border-color: seagreen;
-            font-weight: 600;
-            padding: 12px;
-            border: none !important;
-            box-shadow: none !important;
+                .btn-primary-custom {
+                        background-color: seagreen;
+                        border-color: seagreen;
+                        font-weight: 600;
+                        padding: 12px;
+                        border: none !important;
+                        box-shadow: none !important;
+
         }
 
-            .btn-primary-custom:hover {
-                background-color: darkgreen;
-                border-color: darkgreen;
+                    .btn-primary-custom:hover {
+                            background-color: darkgreen;
+                            border-color: darkgreen;
+
             }
 
-        .link-custom {
-            color: darkmagenta;
-        }
+
     </style>
 </head>
 <body>
@@ -82,35 +89,35 @@
                 </div>
                 <h2 class="mb-4">Sign Up to The App</h2>
 
-                <form asp-action="Register" method="post">
+                <form asp-action="Register" method="post" id="registrationForm">
                     <div asp-validation-summary="All" class="text-danger"></div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Email" class="form-label text-muted">Email</label>
+                        <label asp-for="Email" class="form-label text-muted"></label>
                         <input asp-for="Email" class="form-control form-control-custom" placeholder="Enter your email address" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Name" class="form-label text-muted">Name</label>
+                        <label asp-for="Name" class="form-label"></label>
                         <input asp-for="Name" class="form-control form-control-custom" placeholder="Enter your name" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Password" class="form-label text-muted">Password</label>
+                        <label asp-for="Password" class="form-label"></label>
                         <input asp-for="Password" class="form-control form-control-custom" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="ConfirmPassword" class="form-label text-muted">Confirm Password</label>
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
                         <input asp-for="ConfirmPassword" class="form-control form-control-custom" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-primary-custom">Sign Up</button>
+                        <button type="submit" class="btn btn-primary btn-primary-custom" id="submitBtn">Sign Up</button>
                     </div>
                 </form>
                 <div class="d-flex justify-content-center mt-4">
@@ -123,6 +130,13 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#registrationForm').on('submit', function() {
+                $('#submitBtn').prop('disabled', true);
+            });
+        });
+    </script>
     @section Scripts {
         <partial name="_ValidationScriptsPartial" />
     }
