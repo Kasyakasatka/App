@@ -15,13 +15,13 @@
     <div class="d-flex justify-content-between mb-3">
         <div class="d-flex gap-2">
             <form id="userActionForm" method="post">
-                <button type="submit" formaction="@Url.Action("Block", "Admin")" class="btn btn-primary btn-icon" disabled id="blockBtn" data-action="Block">
+                <button type="button" class="btn btn-primary btn-icon" disabled id="blockBtn" data-action="Block">
                     <i class="fa-solid fa-lock"></i> Block
                 </button>
-                <button type="submit" formaction="@Url.Action("Unblock", "Admin")" class="btn btn-outline-primary btn-icon" disabled id="unblockBtn" data-action="Unblock">
+                <button type="button" class="btn btn-outline-primary btn-icon" disabled id="unblockBtn" data-action="Unblock">
                     <i class="fa-solid fa-unlock"></i> Unblock
                 </button>
-                <button type="submit" formaction="@Url.Action("Delete", "Admin")" class="btn btn-outline-danger btn-icon" disabled id="deleteBtn" data-action="Delete">
+                <button type="button" class="btn btn-outline-danger btn-icon" disabled id="deleteBtn" data-action="Delete">
                     <i class="fa-solid fa-trash-can"></i> Delete
                 </button>
                 <input type="hidden" name="selectedUsers" id="selectedUsersInput" />
@@ -87,6 +87,7 @@
             const actionButtons = $('#blockBtn, #unblockBtn, #deleteBtn');
             const filterInput = $('#filterInput');
             const userTableRows = $('#userTable tbody tr');
+            let pendingAction = null;
 
             function toggleButtons() {
                 const anyChecked = userCheckboxes.is(':checked');
@@ -122,14 +123,15 @@
                     }).appendTo(form);
                 });
 
-                form.attr('action', `@Url.Action("${pendingAction}", "Admin")`);
+                form.attr('action', `/Admin/${pendingAction}`);
                 form.submit();
             });
 
-            filterInput.on('keyup', function() {
+             filterInput.on('keyup', function() {
                 const value = $(this).val().toLowerCase();
                 userTableRows.filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                    const rowText = $(this).text().toLowerCase();
+                    $(this).toggle(rowText.indexOf(value) > -1);
                 });
             });
 
