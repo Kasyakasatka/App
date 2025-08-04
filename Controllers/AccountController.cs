@@ -129,7 +129,6 @@ namespace UserManagementApp.Controllers
             _logger.LogInformation("Login page requested.");
             return View();
         }
-
         [HttpPost]
         public async Task<IActionResult> Login(LoginUserDto dto)
         {
@@ -164,6 +163,7 @@ namespace UserManagementApp.Controllers
 
             return View(dto);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Logout()

@@ -1,7 +1,7 @@
 ﻿@model UserManagementApp.DTOs.LoginUserDto
 @{
     ViewData["Title"] = "Sign In";
-    Layout = null;
+    Layout = null; 
 }
 
 <!DOCTYPE html>
@@ -11,61 +11,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - The App</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
-        body {
-            background-color: darkslategrey;
+                body {
+                        background-color: darkslategrey;
+
         }
 
-        .login-container {
-            display: flex;
-            height: 100vh;
+                .login-container {
+                        display: flex;
+                        height: 100vh;
+
         }
 
-        .left-panel {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #fff;
+                .left-panel {
+                        flex: 1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background-color: #fff;
+
         }
 
-        .right-panel {
-            flex: 1;
-            background-size: cover;
-            background-position: center;
+                .right-panel {
+                        flex: 1;
+                        background-size: cover;
+                        background-position: center;
+
         }
 
-        .login-form {
-            width: 80%;
-            max-width: 400px;
+                .login-form {
+                        width: 80%;
+                        max-width: 400px;
+
         }
 
-        .form-control-custom {
-            border: 1px solid #dee2e6;
-            box-shadow: none;
-            height: 48px;
-            font-size: 1rem;
+                .form-control-custom {
+                        border: 1px solid #dee2e6;
+                        box-shadow: none;
+                        height: 48px;
+                        font-size: 1rem;
+
         }
 
-        .form-control:focus {
-            border-color: magenta;
-            box-shadow: 0 0 0 0.25rem rgba(255, 0, 255, 0.25);
-            outline: none;
+
+                .form-control:focus {
+                        border-color: magenta;
+                        box-shadow: 0 0 0 0.25rem rgba(255, 0, 255, 0.25);
+                        outline: none;
+
+ 
+
         }
 
-        .btn-primary-custom {
-            background-color: seagreen;
-            border-color: seagreen;
-            font-weight: 600;
-            padding: 12px;
-            border: none !important;
-            box-shadow: none !important;
+                .btn-primary-custom {
+                        background-color: seagreen;
+                        border-color: seagreen;
+                        font-weight: 600;
+                        padding: 12px;
+                        border: none !important;
+                        box-shadow: none !important;
+
         }
 
-            .btn-primary-custom:hover {
-                background-color: darkgreen;
-                border-color: darkgreen;
+                    .btn-primary-custom:hover {
+                            background-color: darkgreen;
+                            border-color: darkgreen;
+
             }
 
         .visually-hidden {
@@ -109,7 +122,8 @@
 
         .link-custom {
             color: darkmagenta;
-        }
+
+
     </style>
 </head>
 <body>
@@ -128,7 +142,7 @@
                     </div>
                 }
 
-                <form asp-action="Login" method="post">
+                <form asp-action="Login" method="post" id="loginForm">
                     <div asp-validation-summary="All" class="text-danger"></div>
 
                     <div class="form-group mb-3">
@@ -139,14 +153,19 @@
 
                     <div class="form-group mb-3">
                         <label asp-for="Password" class="form-label text-muted">Password</label>
-                        <input asp-for="Password" class="form-control form-control-custom" />
+                        <div class="input-group">
+                            <input asp-for="Password" class="form-control form-control-custom" />
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
+                        </div>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <div class="form-group form-check mb-3">
-                        <input class="form-check-input visually-hidden" type="checkbox" id="rememberMe">
+                        <input asp-for="RememberMe" class="form-check-input visually-hidden" type="checkbox" id="rememberMe" />
                         <label class="form-check-label custom-checkbox" for="rememberMe">
-                            Remember me
+                            Remember me?
                         </label>
                     </div>
 
@@ -165,8 +184,41 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const emailInput = $('#Email');
+            const passwordInput = $('#Password');
+            const rememberMeCheckbox = $('#rememberMe');
+            const loginForm = $('#loginForm');
+            const togglePasswordBtn = $('#togglePassword');
+
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            if (rememberedEmail) {
+                emailInput.val(rememberedEmail);
+                rememberMeCheckbox.prop('checked', true);
+            }
+
+            loginForm.on('submit', function() {
+                if (rememberMeCheckbox.is(':checked')) {
+                    localStorage.setItem('rememberedEmail', emailInput.val());
+                } else {
+                    localStorage.removeItem('rememberedEmail');
+                }
+            });
+
+            togglePasswordBtn.on('click', function() {
+                const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
+                passwordInput.attr('type', type);
+
+                const icon = $(this).find('i');
+                icon.toggleClass('bi-eye-fill bi-eye-slash-fill');
+            });
+        });
+    </script>
+
     @section Scripts {
         <partial name="_ValidationScriptsPartial" />
     }
 </body>
-</html>
+</ht

@@ -37,8 +37,6 @@ namespace UserManagementApp.Extensions
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-            // Логгируем полученную строку подключения, чтобы проверить, что она не пустая и правильная.
-            // Log the retrieved connection string to verify it's not empty and is correct.
             Console.WriteLine($"Connection string from configuration: {connectionString}");
 
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -48,15 +46,11 @@ namespace UserManagementApp.Extensions
                     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
                 }
 
-                // Если строка подключения имеет URI-формат (начинается с "postgresql://"), преобразуем её
-                // If the connection string has a URI format (starts with "postgresql://"), convert it
                 if (connectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
                 {
                     connectionString = ConvertUriToNpgsqlString(connectionString);
                 }
 
-                // Добавляем Trust Server Certificate=true к строке подключения
-                // Add Trust Server Certificate=true to the connection string
                 var finalConnectionString = connectionString + ";Trust Server Certificate=true";
 
                 options.UseNpgsql(finalConnectionString);
@@ -98,7 +92,7 @@ namespace UserManagementApp.Extensions
                 Host = uri.Host,
                 Port = uri.Port,
                 Username = userInfo[0],
-                Password = Uri.UnescapeDataString(userInfo[1]), // Экранируем пароль
+                Password = Uri.UnescapeDataString(userInfo[1]),
                 Database = uri.AbsolutePath.Trim('/')
             };
 
